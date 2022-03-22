@@ -58,12 +58,13 @@ function removedBuild {
 }
 
 function usage {
-    echo -e "${GREEN}${BOLD}Usage:${NC}${REGULAR}"
+    echo -e "${CYAN}${BOLD}Usage:${NC}${REGULAR}"
     echo -e "${GREEN} --- buildProject.sh${NC}"
     echo -e "${GREEN} --- buildProject.sh --help${NC}"
     echo -e "${GREEN} --- buildProject.sh --documentation || -d${NC}"
     echo -e "${GREEN} --- buildProject.sh --clean || -c${NC}"
     echo -e "${GREEN} --- buildProject.sh --version || -v${NC}"
+    echo -e "${GREEN} --- buildProject.sh --moulinette || -m${NC}"
 }
 
 center() {
