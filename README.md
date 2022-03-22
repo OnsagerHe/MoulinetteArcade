@@ -18,6 +18,7 @@ There is no prerequisite to run the bash script. <br/>
 ## Execute Script
 ``` ./buildProject ```
 This command execute CMakeLists or Makefile. <br/>
+<b> This script is to be put in the root of your Arcade project. <b/>
 
 ### Flags: :books:
 
