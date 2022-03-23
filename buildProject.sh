@@ -193,11 +193,11 @@ function checkCompil {
     if [ -f ./CMakeLists.txt ]
         then
             echo -e "${GREEN}${BOLD}[+]${NC} CMakeLists.txt found"
-            $MAKE=0
+            MAKE=0
     elif [ -f ./Makefile ]
         then
             echo -e "${GREEN}${BOLD}[+]${NC} Makefile found"
-            $MAKE=1
+            MAKE=1
     else
         echo -e "${RED}${BOLD}[-]${NC} CMakeLists.txt or Makefile not found"
         echo -e "${RED}${BOLD}Please, run the script from the project root directory${NC}"
