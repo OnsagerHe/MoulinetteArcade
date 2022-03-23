@@ -67,19 +67,64 @@ function usage {
     echo -e "${GREEN} --- buildProject.sh --moulinette || -m${NC}"
 }
 
-center() {
-    termwidth="$(tput cols)"
-    padding="$(printf '%0.1s' ={1..500})"
-    printf '%*.*s %s %*.*s\n' 0 "$(((termwidth-2-${#1})/2))" "$padding" "$1" 0 "$(((termwidth-1-${#1})/2))" "$padding"
+function mandatoryFunction {
+    arr=("$@")
+
+    if [[ ${arr} =~ "arcade_ncurses.so" ]] 
+        then
+            echo -e "${RED}${BOLD}[-]${NC} ./lib/arcade_ncurses.so folder not found"
+        else
+            echo -e "${GREEN}${BOLD}[+]${NC} ./lib/arcade_ncurses.so folder found"
+    fi
+
+    if [[ ${arr} =~ "arcade_sdl2.so" ]] 
+        then
+            echo -e "${RED}${BOLD}[-]${NC} ./lib/arcade_sdl2.so folder not found"
+        else
+            echo -e "${GREEN}${BOLD}[+]${NC} ./lib/arcade_sdl2.so folder found"
+    fi
 }
 
-function checkLib {
+function lenCounterGraphical {
+        # If counter < 3 print error
+    name=$1[@]
+    counter=$2
+    notFound=("${!name}")
+
+    if [ $counter -lt 3 ]
+        then
+            echo -e "${RED}${BOLD}[-]${NC} You must have at least 3 libraries"
+            echo -e "${RED}${BOLD}[-]${NC} You have only $counter libraries"
+            echo -e "${RED}${BOLD}[-]${NC} Choose another graphic library in this list :"
+            echo -e "${RED}${BOLD}[-]${NC} ${notFound[@]}"
+            exit 1
+    fi
+    notFound=""
+}
+
+function lenCounterGame {
+    name=$1[@]
+    counter=$2
+    notFountGame=("${!name}")
+
+    if [ $counter -lt 2 ]
+        then
+            echo -e "${RED}${BOLD}[-]${NC} You must have at least 2 libraries game."
+            echo -e "${RED}${BOLD}[-]${NC} You have only $counter libraries game."
+            echo -e "${RED}${BOLD}[-]${NC} Choose another game library in this list :"
+            echo -e "${RED}${BOLD}[-]${NC} ${notFountGame[@]}"
+            exit 1
+    fi
+}
+
+function checkLibGame {
+    notFountGame=()
+    array=(arcade_nibbler.so arcade_pacman.so arcade_qix.so arcade_centipede.so arcade_solarfox.so)
     declare -i counter=0
-    notFound=()
-    array=(arcade_sfml.so arcade_sdl.so arcade_ncurses.so arcade_pacman.so arcade_nibbler.so documenation.pdf)
+    declare -i count=0
     declare -i size=$(( ${#array[@]} ))
 
-    echo -e "${CYAN}${BOLD}--- Checking libraries ---${NC}${REGULAR}"
+    echo -e "${CYAN}${BOLD}--- Checking libraries game ---${NC}${REGULAR}"
     echo
     if [[ -d ./lib ]]
         then
@@ -87,38 +132,60 @@ function checkLib {
             do
                 if [[ -f ${ROOT_DIR}/lib/$i ]]
                     then
-                        counter=$((counter + 1))
-                        sleep 0.5
-                        ProgressBar ${counter} $size
-                elif [[ -f ${ROOT_DIR}/doc/$i ]]
+                        counter+=1
+                else
+                    notFountGame+=($i)
+                fi
+                count+=1
+                sleep 0.2
+                ProgressBar ${count} $size
+            done
+        else
+            echo -e "${RED}${BOLD}Library files game not found.${NC}"
+            echo -e "${RED}${BOLD}Please, run the script from the project root directory${NC}"
+            exit 1
+    fi
+    echo
+    lenCounterGame notFountGame "${counter}"
+    echo -e "${GREEN}${BOLD}[+]${NC} ${counter}/$size libraries game found."
+}
+
+function checkLibGraphic {
+    notFound=()
+    array=(arcade_ncurses.so arcade_sdl2.so arcade_ndk++.so arcade_aalib.so arcade_libcaca.so
+    arcade_allegro5.so arcade_xlib.so arcade_gtk+.so arcade_sfml.so arcade_irrlicht.so 
+    arcade_opengl.so arcade_vulkan.so arcade_qt5.so)
+    declare -i counter=0
+    declare -i count=0
+    declare -i size=$(( ${#array[@]} ))
+
+    echo -e "${CYAN}${BOLD}--- Checking libraries graphical ---${NC}${REGULAR}"
+    echo
+    if [[ -d ./lib ]]
+        then
+            for i in "${array[@]}"
+            do
+                if [[ -f ${ROOT_DIR}/lib/$i ]]
                     then
-                        counter=$((counter + 1))
-                        sleep 0.5
-                        ProgressBar ${counter} $size
+                        counter+=1
                 else
                     notFound+=($i)
                     # echo
                     # echo -e "${RED}${BOLD}[-]${NC} ./lib/$i folder not found"
                 fi
+                count+=1
+                sleep 0.2
+                ProgressBar ${count} $size
             done
         else
-            echo -e "${RED}${BOLD}Library files or documentation not found${NC}"
+            echo -e "${RED}${BOLD}Library files graphical not found.${NC}"
             echo -e "${RED}${BOLD}Please, run the script from the project root directory${NC}"
             exit 1
     fi
-    declare -i sizeNotFound=$(( ${#notFound[@]} ))
-    if [ $sizeNotFound -ne 0 ]
-    then
-        echo -e "\n"
-        echo -e "${RED}--- ${BOLD}$sizeNotFound${REGULAR}${RED} file(s) not found ---${NC}"
-        for value in "${notFound[@]}"
-            do
-                echo -e "${RED}${BOLD}[-]${NC} ./lib/$value folder not found"
-
-        done
-    fi
-    
-    echo -e "${GREEN}${BOLD}[+]${NC} ${counter}/$size libraries and documentation found"
+    echo
+    lenCounterGraphical notFound "${counter}"
+    mandatoryFunction "${notFound[@]}"
+    echo -e "${GREEN}${BOLD}[+]${NC} ${counter}/$size libraries graphical found."
 }
 
 function checkCompil {
@@ -162,6 +229,9 @@ function checkArgument {
     ${ROOT_DIR}/arcade > /dev/null 2>&1
     returnValue=$?
     defaultValue=84
+
+    echo
+    echo -e "${CYAN}${BOLD}--- Checking arguments ---${NC}${REGULAR}"
 
     if [[ $returnValue -eq $defaultValue ]]
         then
@@ -207,9 +277,11 @@ function moulinette {
     else
         make re
     fi
-    ls ./arcade ./lib/ > /dev/null 2>&1
-    checkLib
+    # ls ./arcade ./lib/ > /dev/null 2>&1
+    #checkLib
     checkArgument
+    checkLibGraphic
+    checkLibGame
     removedBin
     removedBuild
 }
@@ -229,37 +301,35 @@ function createDocumentation {
     fi
 }
 
-function mainProgram {
-    if [ $# -eq 0 ]
+if [ $# -eq 0 ]
+    then
+        doCompilation
+    elif [ $# -eq 1 ]
         then
-            doCompilation
-        elif [ $# -eq 1 ]
-            then
-                if [ $1 == "--help" ] || [ $1 == "-h" ]
-                    then
-                        usage
-                elif [ $1 == "--clean" ] || [ $1 == "-c" ]
-                    then
-                        removedBuild
-                        removedBin
-                elif [ $1 == "--documentation" ] || [ $1 == "-d" ]
-                    then
-                        echo -e "${CYAN}${BOLD}--- {Documentation} ---${NC}${REGULAR}"
-                            createDocumentation
-                elif [ $1 == "--version" ] || [ $1 == "-v" ]
-                    then
-                        echo -e "${CYAN}${BOLD}--- {Version} ---${NC}${REGULAR}"
-                        echo -e " arcade-build-script v0.1.3"
-                elif [ $1 == "--moulinette" ] || [ $1 == "-m" ]
-                    then
-                        moulinette
-                else
+            if [ $1 == "--help" ] || [ $1 == "-h" ]
+                then
                     usage
-                fi
-        else
-            echo -e "${RED}${BOLD}Invalid argument${NC}${REGULAR}"
-            usage
-    fi
-}
+            elif [ $1 == "--clean" ] || [ $1 == "-c" ]
+                then
+                    removedBuild
+                    removedBin
+            elif [ $1 == "--documentation" ] || [ $1 == "-d" ]
+                then
+                    echo -e "${CYAN}${BOLD}--- {Documentation} ---${NC}${REGULAR}"
+                        createDocumentation
+            elif [ $1 == "--version" ] || [ $1 == "-v" ]
+                then
+                    echo -e "${CYAN}${BOLD}--- {Version} ---${NC}${REGULAR}"
+                    echo -e " arcade-build-script v0.1.3"
+            elif [ $1 == "--moulinette" ] || [ $1 == "-m" ]
+                then
+                    moulinette
+            else
+                usage
+            fi
+    else
+        echo -e "${RED}${BOLD}Invalid argument${NC}${REGULAR}"
+        usage
+fi
 
-mainProgram
+# mainProgram
