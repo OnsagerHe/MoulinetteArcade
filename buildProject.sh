@@ -15,7 +15,7 @@ BLINK=$(tput blink)
 END='\e[27m'
 CYAN='\033[0;36m'
 
-MAKE=0
+declare -i MAKE=0
 
 trap "echo ' Trapped Ctrl-C'" SIGINT
 function ProgressBar {
