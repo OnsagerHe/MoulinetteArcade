@@ -189,20 +189,24 @@ function checkLibGraphic {
 }
 
 function checkCompil {
+    echo -e "${CYAN}${BOLD}--- Checking compilation ---${NC}${REGULAR}"
     if [ -f ./CMakeLists.txt ]
         then
+            echo -e "${GREEN}${BOLD}[+]${NC} CMakeLists.txt found"
             $MAKE=0
     elif [ -f ./Makefile ]
         then
+            echo -e "${GREEN}${BOLD}[+]${NC} Makefile found"
             $MAKE=1
     else
-        echo -e "${RED}${BOLD}CMakeLists.txt or Makefile not found${NC}"
+        echo -e "${RED}${BOLD}[-]${NC} CMakeLists.txt or Makefile not found"
         echo -e "${RED}${BOLD}Please, run the script from the project root directory${NC}"
         exit 1
     fi
 }
 
 function doCompilation {
+    checkCompil
     mkdir -p build
     if [ $MAKE -eq 0 ]
         then
@@ -268,6 +272,7 @@ function checkArgument {
 
 function moulinette {
     echo -e "${CYAN}${BOLD}--- {Moulinette} ---${NC}${REGULAR}"
+    checkCompil
     if [ $MAKE -eq 0 ]
         then
         mkdir ./build/ && cd ./build/
@@ -277,6 +282,7 @@ function moulinette {
     else
         make re
     fi
+    echo -e $txt
     # ls ./arcade ./lib/ > /dev/null 2>&1
     #checkLib
     checkArgument
@@ -316,11 +322,11 @@ if [ $# -eq 0 ]
             elif [ $1 == "--documentation" ] || [ $1 == "-d" ]
                 then
                     echo -e "${CYAN}${BOLD}--- {Documentation} ---${NC}${REGULAR}"
-                        createDocumentation
+                    createDocumentation
             elif [ $1 == "--version" ] || [ $1 == "-v" ]
                 then
                     echo -e "${CYAN}${BOLD}--- {Version} ---${NC}${REGULAR}"
-                    echo -e " arcade-build-script v0.1.3"
+                    echo -e " arcade-build-script v0.1.5"
             elif [ $1 == "--moulinette" ] || [ $1 == "-m" ]
                 then
                     moulinette
