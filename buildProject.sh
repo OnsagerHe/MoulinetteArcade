@@ -308,6 +308,13 @@ if [ $# -eq 0 ]
             elif [ $1 == "--moulinette" ] || [ $1 == "-m" ]
                 then
                     moulinette
+            elif [ $1 == "--update" ] || [ $1 == "-u" ]
+                then
+                    echo -e "${CYAN}${BOLD}--- {Update} ---${NC}${REGULAR}"
+                    git clone git@github.com:OnsagerHe/MoulinetteArcade.git
+                    mv buildProject.sh buildProject_old.sh
+                    cp -f MoulinetteArcade/buildProject.sh .
+                    rm -rf MoulinetteArcade
             else
                 echo -e "${RED}${BOLD}Invalid argument${NC}${REGULAR}"
                 usage
