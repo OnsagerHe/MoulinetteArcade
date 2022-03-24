@@ -142,6 +142,20 @@ function checkLibGame {
     echo -e "${GREEN}${BOLD}[+]${NC} ${counter}/$size libraries game found."
 }
 
+function debugProgram {
+    if [ -f ${ROOT_DIR}/CMakeLists.txt ]
+        then
+            mkdir -p ${ROOT_DIR}/build/
+            cd ${ROOT_DIR}/build
+            cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Wall -std=c++11 -Werror -g"
+            -DCMAKE_INSTALL_PREFIX=${ROOT_DIR}/build -G "Unix Makefiles"
+            make -j4
+        else
+            echo -e "${RED}${BOLD}[-]${NC} CMakeLists.txt only for debug mode"
+            exit 1
+    fi
+}
+
 function checkLibGraphic {
     notFound=()
     array=(arcade_ncurses.so arcade_sdl2.so arcade_ndk++.so arcade_aalib.so arcade_libcaca.so
@@ -315,6 +329,10 @@ if [ $# -eq 0 ]
                     mv buildProject.sh buildProject_old.sh
                     cp -f MoulinetteArcade/buildProject.sh .
                     rm -rf MoulinetteArcade
+            elif [ $1 == "--debug" ] || [ $1 == "-g" ]
+                then
+                    echo -e "${CYAN}${BOLD}--- {Debug} ---${NC}${REGULAR}"
+                    debugProgram
             else
                 echo -e "${RED}${BOLD}Invalid argument${NC}${REGULAR}"
                 usage
