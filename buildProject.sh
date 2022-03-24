@@ -1,5 +1,6 @@
 #!/bin/bash
 # Path: buildProject.sh
+# Author : Albert VALENTIN - OnsagerHe
 
 ROOT_DIR=$PWD
 
@@ -28,16 +29,9 @@ function ProgressBar {
     printf "\rProgress : [${_fill// /#}${_empty// /-}] ${_progress}%%"
 }
 
-# for number in $(seq ${_start} ${_end})
-# do
-#     sleep 0.01
-#     ProgressBar ${number} ${_end}
-# done
-
 function removedBin {
     if [[ -f ${ROOT_DIR}/arcade ]]
         then
-            #echo -e "${GREEN}arcade binary succefully removed${NC}"
             rm -f ${ROOT_DIR}/arcade
         else
             echo -e "${RED}arcade binary doesn't exist${NC}"
@@ -50,7 +44,6 @@ function removedBin {
 function removedBuild {
     if [[ -d ${ROOT_DIR}/build ]]
         then
-            #echo -e "${GREEN}Build removed successfully${NC}"
             rm -rf ${ROOT_DIR}/build
         else
             echo -e "${RED}Build folder doesn't exist${NC}"
@@ -60,7 +53,7 @@ function removedBuild {
 function usage {
     echo -e "${CYAN}${BOLD}Usage:${NC}${REGULAR}"
     echo -e "${GREEN} --- buildProject.sh${NC}"
-    echo -e "${GREEN} --- buildProject.sh --help${NC}"
+    echo -e "${GREEN} --- buildProject.sh --help || -h${NC}"
     echo -e "${GREEN} --- buildProject.sh --documentation || -d${NC}"
     echo -e "${GREEN} --- buildProject.sh --clean || -c${NC}"
     echo -e "${GREEN} --- buildProject.sh --version || -v${NC}"
@@ -86,7 +79,6 @@ function mandatoryFunction {
 }
 
 function lenCounterGraphical {
-        # If counter < 3 print error
     name=$1[@]
     counter=$2
     notFound=("${!name}")
@@ -170,8 +162,6 @@ function checkLibGraphic {
                         counter+=1
                 else
                     notFound+=($i)
-                    # echo
-                    # echo -e "${RED}${BOLD}[-]${NC} ./lib/$i folder not found"
                 fi
                 count+=1
                 sleep 0.2
@@ -259,15 +249,6 @@ function checkArgument {
             else
             echo -e "${RED}${BOLD}[-]${NC} Arcade length arguments different than 1"
     fi
-    # ${ROOT_DIR}/arcade ${ROOT_DIR}/lib/arcade_sfml.so > /dev/null 2>&1
-    # returnValue=$?
-    # defaultValue=0
-    # if [[ $returnValue -eq $defaultValue ]]
-    #     then
-    #         echo -e "${GREEN}${BOLD}[+]${NC} Arcade with great arguments"
-    #         else
-    #         echo -e "${RED}${BOLD}[-]${NC} Arcade with great arguments"
-    # fi
 }
 
 function moulinette {
@@ -282,9 +263,6 @@ function moulinette {
     else
         make re
     fi
-    echo -e $txt
-    # ls ./arcade ./lib/ > /dev/null 2>&1
-    #checkLib
     checkArgument
     checkLibGraphic
     checkLibGame
@@ -331,6 +309,7 @@ if [ $# -eq 0 ]
                 then
                     moulinette
             else
+                echo -e "${RED}${BOLD}Invalid argument${NC}${REGULAR}"
                 usage
             fi
     else
